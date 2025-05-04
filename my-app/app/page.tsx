@@ -16,7 +16,7 @@
  // --- Define Audio Paths (REPLACE THESE WITH YOUR ACTUAL FILE PATHS) ---
  const AUDIO_PATHS: Record<string, string> = {
    lifting: '/audio/lifting.mp3', // Example path
-   stirring: '/audio/bear.mp3', // Example path
+   stirring: '/audio/stirring.mp3', // Example path
    resting: '/audio/resting.mp3',  // Example path
    tilting: '/audio/tilting.mp3',  // Example path
    // Add more mappings here if needed, e.g., peace: '/audio/peace_sound.mp3'
