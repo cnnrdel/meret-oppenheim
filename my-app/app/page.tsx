@@ -15,8 +15,8 @@
 
  // --- Define Audio Paths (REPLACE THESE WITH YOUR ACTUAL FILE PATHS) ---
  const AUDIO_PATHS: Record<string, string> = {
-   holding: '/audio/holding.mp3', // Example path
-   stirring: '/audio/stirring.mp3', // Example path
+   lifting: '/audio/lifting.mp3', // Example path
+   stirring: '/audio/bear.mp3', // Example path
    resting: '/audio/resting.mp3',  // Example path
    tilting: '/audio/tilting.mp3',  // Example path
    // Add more mappings here if needed, e.g., peace: '/audio/peace_sound.mp3'
@@ -24,7 +24,7 @@
  };
 
  // Define which gestures should trigger audio
- const TRIGGERABLE_GESTURES = new Set(['holding', 'stirring', 'resting', 'tilting']);
+ const TRIGGERABLE_GESTURES = new Set(['lifting', 'stirring', 'resting', 'tilting']);
 
  export default function Home() {
    const webcamRef = useRef<HTMLVideoElement>(null);
@@ -415,10 +415,6 @@
              <Card className="p-4 shadow-md">
                <h2 className="text-xl font-semibold text-slate-700 mb-4">Audio Player</h2>
                <div className="bg-slate-100 rounded-lg p-4">
-                 <div className="flex items-center justify-center mb-3">
-                   <Volume2 className="h-6 w-6 text-slate-600 mr-2" />
-                   <span className="text-slate-600">Last Triggered Sound</span>
-                 </div>
                  {/* Single Audio Element controlled by the safePlayAudio function */}
                  <audio
                    ref={audioPlayerRef}
@@ -428,14 +424,7 @@
                    onEnded={() => { lastGestureRef.current = 'None'; }} // Optional: Reset last gesture when audio finishes
                  />
                </div>
-               {/* Display interaction requirement hint */}
-               {!hasInteractedRef.current && modelRef.current && (
-                  <p className="text-xs text-slate-500 mt-2 text-center">Click "Start Detection" to enable audio.</p>
-               )}
-             </Card>
-
-             {/* Instructions Card */}
-             
+             </Card>             
            </div>
          </div>
        </div>
