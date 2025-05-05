@@ -3,18 +3,15 @@
  import { useState, useEffect, useRef, useCallback } from 'react';
  import { Button } from '@/components/ui/button';
  import { Card } from '@/components/ui/card';
- // Removed Tabs imports as they are not used in the provided JSX
  import { Loader2, Info, Volume2, Camera } from 'lucide-react'; // Keep Volume2 for Audio Player card
 
  import * as tmImage from '@teachablemachine/image';
 
- // --- Configuration ---
  const MODEL_URL = '/tm-my-image-model/model.json';
  const METADATA_URL = '/tm-my-image-model/metadata.json';
  const CONFIDENCE_THRESHOLD = 0.7;
  const GESTURE_HOLD_DURATION = 3000; // <<< Time in milliseconds (3 seconds)
 
- // --- Define Audio Paths (Using the paths from your provided code) ---
  const AUDIO_PATHS: Record<string, string> = {
    lifting: '/audio/lifting.mp3',
    stirring: '/audio/stirring.mp3',
@@ -22,12 +19,11 @@
    tilting: '/audio/tilting.mp3',
  };
 
- // Define which gestures should trigger audio (Using the gestures from your provided code)
  const TRIGGERABLE_GESTURES = new Set(['lifting', 'stirring', 'resting', 'tilting']);
 
  export default function Home() {
    const webcamRef = useRef<HTMLVideoElement>(null);
-   const audioPlayerRef = useRef<HTMLAudioElement | null>(null); // Keep as per provided code
+   const audioPlayerRef = useRef<HTMLAudioElement | null>(null); 
    const lastPlayedTimeRef = useRef<number>(0);
    const lastGestureRef = useRef<string>('None');
    const hasInteractedRef = useRef<boolean>(false);
@@ -35,12 +31,9 @@
    const animationFrameIdRef = useRef<number | null>(null);
    const audioElementsRef = useRef<Record<string, HTMLAudioElement>>({});
 
-   // --- Refs for Hold Detection ---
    const gestureStartTimeRef = useRef<number | null>(null);
    const currentTrackedGestureRef = useRef<string | null>(null);
    const triggerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-   // --- End Refs for Hold Detection ---
-
 
    const [isDetecting, setIsDetecting] = useState(false);
    const [isLoading, setIsLoading] = useState(false);
@@ -51,9 +44,8 @@
    const [labels, setLabels] = useState<string[]>([]);
 
 
-   // Load Teachable Machine model and Preload Audio
    useEffect(() => {
-     async function loadModelAndAudio() { // Combined function
+     async function loadModelAndAudio() { 
        try {
          setModelStatus('Loading model...');
          const model = await tmImage.load(MODEL_URL, METADATA_URL);
@@ -62,7 +54,6 @@
          setLabels(modelLabels);
          setModelStatus('Model loaded successfully!');
 
-         // --- Preload Audio ---
          const initialElements: Record<string, HTMLAudioElement> = {};
          modelLabels.forEach((label) => {
            const labelLower = label.toLowerCase();
@@ -76,7 +67,6 @@
            }
          });
          audioElementsRef.current = initialElements;
-         // --- End Audio Preloading ---
 
        } catch (err: any) {
          console.error('Failed to load model or audio:', err);
@@ -88,7 +78,6 @@
 
      loadModelAndAudio();
 
-     // Cleanup function
      return () => {
         // Clear any pending timeout when component unmounts
         if (triggerTimeoutRef.current) {
@@ -103,11 +92,10 @@
         if (triggerTimeoutRef.current) {
             clearTimeout(triggerTimeoutRef.current);
             triggerTimeoutRef.current = null;
-            // console.log("Hold timer cleared.");
         }
         currentTrackedGestureRef.current = null;
         gestureStartTimeRef.current = null;
-   }, []); // No dependencies, safe to memoize
+   }, []); 
 
 
    const handleStartDetection = () => {
@@ -129,9 +117,7 @@
        stream.getTracks().forEach((track) => track.stop());
        webcamRef.current.srcObject = null;
      }
-     // Clear hold timer when stopping detection
      clearGestureHoldTimer();
-     // Reset detected gesture state
      setDetectedGesture('None');
      setConfidence(0);
    };
@@ -178,7 +164,7 @@
          playPromise
            .then(() => {
              lastPlayedTimeRef.current = now;
-             lastGestureRef.current = gesture; // Track that this gesture's sound started playing
+             lastGestureRef.current = gesture; 
              console.log(`Playing audio for: ${gesture}`);
            })
            .catch((err) => {
@@ -195,7 +181,6 @@
        console.error('Audio play error:', e);
        return false;
      }
-     // Reset lastGestureRef when audio finishes playing (using the onEnded prop on the <audio> element is simpler here)
    }, [clearGestureHoldTimer]); // Add clearGestureHoldTimer if it were used inside, but it isn't directly
 
 
@@ -218,7 +203,6 @@
          prediction.sort((a, b) => b.probability - a.probability);
          const topPrediction = prediction[0];
 
-         // Update state for UI display
          setDetectedGesture(topPrediction.className);
          setConfidence(topPrediction.probability);
 
@@ -280,8 +264,6 @@
 
      // --- Setup Webcam ---
      const setupWebcam = async () => {
-        // (Setup Webcam logic remains the same as previous versions)
-        // ... [omitted for brevity, assume it's the same as your last version] ...
        try {
          const stream = await navigator.mediaDevices.getUserMedia({
            video: {
@@ -360,7 +342,6 @@
        <div className="max-w-4xl mx-auto">
          <header className="text-center mb-8">
            <h1 className="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Meret Oppenheim</h1>
-           {/* Add description if desired */}
            <p className="text-slate-600">Hold a gesture for 3 seconds to trigger audio.</p>
          </header>
 
@@ -371,13 +352,11 @@
          )}
 
          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-           {/* Camera Feed Card */}
            <Card className="md:col-span-2 p-4 shadow-md">
              <div className="flex justify-between items-center mb-4">
                <h2 className="text-xl font-semibold text-slate-700">Camera Feed</h2>
                {!isDetecting ? (
                  <Button onClick={handleStartDetection} disabled={isLoading || !modelRef.current || !!error}>
-                   {/* Button Content */}
                    {isLoading ? ( <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Initializing...</> )
                    : ( <><Camera className="mr-2 h-4 w-4" /> Start Detection</> )}
                  </Button>
